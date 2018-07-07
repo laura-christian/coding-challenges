@@ -1,5 +1,6 @@
 from itertools import groupby
 from collections import defaultdict
+from random import randint
 
 def most_active_period(data):
     """Given list of authors and years during which they were active, returns
@@ -188,8 +189,8 @@ class Node(object):
 def prime_generator(n):
     """Generates first n primes
     
-    >>> prime_generator(8)
-    [2, 3, 5, 7, 11, 13, 17, 19]
+    >>> prime_generator(9)
+    [2, 3, 5, 7, 11, 13, 17, 19, 23]
 
     """
     if n == 1:
@@ -295,7 +296,7 @@ class FriendGraph(object):
         >>> f.set_friends("Pippin", ["Treebeard"])
         >>> f.set_friends("Sauron", ["Dick Cheney"])
         >>> f.are_connected("Sam", "Treebeard")
-        True 
+        True
         >>> f.are_connected("Frodo", "Sauron")
         False
         """       
@@ -313,6 +314,93 @@ class FriendGraph(object):
                     seen.add(self.nodes[friend.name])
                     
         return False
+
+
+
+def guess_num(num):
+    """
+    >>> guess_num(85)
+    (85, 6)
+
+    """
+    num_guesses = 1
+    floor = 0
+    ceiling = 100
+    guess = 50
+    while guess != num:
+        if guess < num:
+            num_guesses += 1
+            floor = guess
+            guess = (floor+ceiling)/2
+        elif guess > num:
+            num_guesses += 1
+            ceiling = guess
+            guess = (floor+ceiling)/2
+    return (guess, num_guesses)
+
+def lucky_numbers(n):
+    """Return n unique random numbers from 1-10 (inclusive)"""
+    lucky_nums = set()
+    while len(lucky_nums) < n:
+        lucky_nums.add(randint(1,10))
+        return sorted(list(lucky_nums))
+
+class Node(object):
+    """Linked list node."""
+
+    def __init__(self, data, next=None):
+        self.data = data
+        self.next = next
+
+    def as_rev_string(self):
+        """Represent data for this node and its successors as a string.
+
+        >>> l1 = Node(3)
+        >>> l1.as_rev_string()
+        '3'
+
+        >>> l1 = Node(3, Node(2, Node(1)))
+        >>> l1.as_rev_string()
+        '123'
+        """
+
+        out = []
+        n = self
+
+        while n:
+            out.append(str(n.data))
+            n = n.next
+
+        return "".join(reversed(out))
+        
+def add_linked_lists(l1, l2):
+    """Given two linked lists representing numbers with digits reversed,
+    add the numbers and return sum as another linked list with digits 
+    reversed.
+    >>> l1 = Node(3, Node(2, Node(1)))
+    >>> l2 = Node(6, Node(5, Node(4)))
+    >>> test = add_linked_lists(l1, l2)
+    >>> test.as_rev_string()
+    '579'
+    """
+    num1 = int(l1.as_rev_string())
+    num2 = int(l2.as_rev_string())
+    sum_nums = num1 + num2
+    sum_as_string = str(sum_nums)[::-1]
+    if len(sum_as_string) == 1:
+        return Node(sum_as_string[0])
+    else:
+        node = Node(int(sum_as_string[0]))
+        head = node
+        rest_of_string = sum_as_string[1:]
+        while rest_of_string:
+            next = Node(int(rest_of_string[0]))
+            node.next = next
+            node = next
+            rest_of_string = rest_of_string[1:]
+        return head
+        
+
 
 if __name__ == "__main__":
     import doctest
