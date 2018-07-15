@@ -1,6 +1,7 @@
 from itertools import groupby
 from collections import defaultdict
 from random import randint
+import re
 
 def most_active_period(data):
     """Given list of authors and years during which they were active, returns
@@ -400,6 +401,96 @@ def add_linked_lists(l1, l2):
             rest_of_string = rest_of_string[1:]
         return head
         
+def print_digits_backwards(num):
+    """Given int, print digits in reverse order, starting with the
+    ones place. Do this without converting the number to a string
+    >>> print_digits_backwards(314)
+    4
+    1
+    3
+    """
+    while num > 0:
+        print num % 10
+        num = num/10 # Python 2.7 by default computes floor when carrying out division
+
+
+def parentheses_removal(string):
+    """Remove parentheses from expressions, adjusting accompanying operators accordingly.
+    >>> parentheses_removal('a-(b)')
+    'a-b'
+    >>> parentheses_removal('a-(-b)')
+    'a+b'
+    >>> parentheses_removal('a+(b)')
+    'a+b'
+    >>> parentheses_removal('a+(-b)')
+    'a-b'
+    >>> parentheses_removal('(((((((((-((-(((n))))))))))))))')
+    'n'
+    >>> parentheses_removal('(((a-((((-(-(f)))))))))')
+    'a-f'
+    >>> parentheses_removal('((((-(-(-(-(m-g))))))))')
+    'm-g'
+    >>> parentheses_removal('(((((((m-(-(((((t)))))))))))))')
+    'm+t'
+    >>> parentheses_removal('-x')
+    '-x'
+    >>> parentheses_removal('-(-(x))')
+    'x'
+    >>> parentheses_removal('-((-x))')
+    'x'
+    >>> parentheses_removal('-(-(-x))')
+    '-x'
+    >>> parentheses_removal('-(-(x-y))')
+    'x-y'
+    >>> parentheses_removal('-(x-y)')
+    '-x+y'
+    >>> parentheses_removal('x-(y+z)')
+    'x-y-z'
+    >>> parentheses_removal('x-(y-z)')
+    'x-y+z'
+    >>> parentheses_removal('x-(-y-z)')
+    'x+y+z'
+    >>> parentheses_removal('x-(-((-((((-((-(-(-y)))))))))))')
+    'x-y'
+    >>> parentheses_removal('u-(v-w+(x+y))-z')
+    'u-v+w-x-y-z'
+    >>> parentheses_removal('x-(s-(y-z))-(a+b)')
+    'x-s+y-z-a-b'
+    >>> parentheses_removal('u+(g+v)+(r+t)')
+    'u+g+v+r+t'
+    >>> parentheses_removal('q+(s-(x-o))-(t-(w-a))')
+    'q+s-x+o-t+w-a'
+    >>> parentheses_removal('u-(v-w-(x+y))-z')
+    'u-v+w+x+y-z'
+    >>> parentheses_removal('v-(l+s)-(t+y)-(c+f)+(b-(n-p))')
+    'v-l-s-t-y-c-f+b-n+p'
+    """
+    
+    if ")" not in string:
+        string = re.sub(r'^\++', "", string)
+        string = re.sub(r'-{2,}', "-", string)
+        string = re.sub(r'\+{2,}', "+", string)
+        string = re.sub(r'\+-', "-", string)
+        return string
+
+    expression = [""] + list(string)
+     
+    for i in range(len(expression)):
+        if expression[i] == ")":
+            expression[i] = ""
+            for j in range(i-1, 0, -1):
+                if expression[j] == "(":
+                    expression[j] = ""
+                    if expression[j-1] == "-":
+                        if expression[j+1] == "-":
+                            expression[j-1] = ""        
+                        for k in range(j+1, i):
+                            if expression[k] == "-":
+                                expression[k] = "+"
+                            elif expression[k] == "+":
+                                expression[k] = "-"
+                    string = ''.join(expression)
+                    return parentheses_removal(string)
 
 
 if __name__ == "__main__":
